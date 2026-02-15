@@ -1,0 +1,4 @@
+model,recall_at_k
+bge,1.0
+miniLM,0.6
+mpnet,0.4

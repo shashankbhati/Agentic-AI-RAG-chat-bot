@@ -1,0 +1,16 @@
+model,query,top_k_hit,best_score
+miniLM,What is the policy number?,True,0.4399389624595642
+miniLM,which university is shashank in?,False,0.34739387035369873
+miniLM,what is the monthly premium for insurance?,True,0.6634905934333801
+miniLM,what is the date of application?,True,0.41229546070098877
+miniLM,who is elected chair of the student group by EURECA-PRO,False,0.7386425733566284
+mpnet,What is the policy number?,True,0.5350427031517029
+mpnet,which university is shashank in?,False,0.4349314570426941
+mpnet,what is the monthly premium for insurance?,True,0.6438425779342651
+mpnet,what is the date of application?,False,0.3542400598526001
+mpnet,who is elected chair of the student group by EURECA-PRO,False,0.8164119720458984
+bge,What is the policy number?,True,0.7043749094009399
+bge,which university is shashank in?,True,0.6452203989028931
+bge,what is the monthly premium for insurance?,True,0.7963789701461792
+bge,what is the date of application?,True,0.6896177530288696
+bge,who is elected chair of the student group by EURECA-PRO,True,0.8380472660064697

@@ -1,0 +1,4 @@
+model,accuracy
+bge,1.0
+miniLM,1.0
+mpnet,1.0
