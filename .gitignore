@@ -1,6 +1,27 @@
 __pycache__/
+*.pyc
 .env
 .venv
 node_modules/
 *.log
 
+# Database files
+*.db
+*.sqlite
+
+# Generated artifacts
+dist.zip
+*.zip
+
+# Qdrant local storage
+qdrant_storage/
+
+# Claude Code personal memory
+.claude/
+
+# Frontend/widget build outputs (built inside Docker)
+frontend/dist/
+widget/dist/
+
+# Data uploads
+data/

@@ -1,0 +1,69 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# RAG Chatbot Agent — docker-compose.yml
+# Usage: docker compose up -d
+# ═══════════════════════════════════════════════════════════════════════════════
+
+services:
+
+  # ── Vector database ───────────────────────────────────────────────────────
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: rag_qdrant
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6333/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Local LLM (Ollama) ────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag_ollama
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    # Uncomment for NVIDIA GPU support:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # ── RAG Chatbot (main app) ────────────────────────────────────────────────
+  rag-chatbot:
+    image: DOCKER_USERNAME/rag-chatbot:latest   # replaced by build-and-push.sh
+    container_name: rag_chatbot
+    ports:
+      - "8000:8000"
+    environment:
+      QDRANT_URL:       http://qdrant:6333
+      OLLAMA_BASE_URL:  http://ollama:11434
+      LLM_PROVIDER:     ${LLM_PROVIDER:-ollama}
+      OLLAMA_MODEL:     ${OLLAMA_MODEL:-phi3:mini}
+      OPENAI_API_KEY:   ${OPENAI_API_KEY:-}
+      COLLECTION_NAME:  ${COLLECTION_NAME:-rag_collection}
+      ALLOWED_ORIGINS:  ${ALLOWED_ORIGINS:-http://localhost:8000}
+      JWT_SECRET:       ${JWT_SECRET:-change-me-please}
+    env_file:
+      - path: .env
+        required: false   # .env is optional; env vars above are the defaults
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - rag_data:/app/data
+      - rag_db:/app/rag_chatbot.db
+    restart: unless-stopped
+
+volumes:
+  qdrant_storage:
+  ollama_models:
+  rag_data:
+  rag_db:

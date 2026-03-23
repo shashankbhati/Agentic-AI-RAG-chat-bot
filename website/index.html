@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Chatbot Agent — Self-Hosted AI for Your Documents</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #2563eb;
+      --blue2:  #1d4ed8;
+      --dark:   #0f172a;
+      --gray:   #64748b;
+      --light:  #f8fafc;
+      --card:   #ffffff;
+      --border: #e2e8f0;
+      --green:  #16a34a;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 99;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo { font-weight: 700; font-size: 1.1rem; color: var(--blue); }
+    nav a { color: var(--gray); text-decoration: none; font-size: .9rem; margin-left: 1.5rem; }
+    nav a:hover { color: var(--blue); }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 1.5rem 4rem;
+      background: linear-gradient(160deg, #eff6ff 0%, #f0fdf4 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      background: #dbeafe; color: var(--blue2);
+      font-size: .8rem; font-weight: 600;
+      padding: .3rem .9rem; border-radius: 999px;
+      margin-bottom: 1.2rem; letter-spacing: .02em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; line-height: 1.15;
+      max-width: 680px; margin: 0 auto .8rem;
+    }
+    .hero h1 span { color: var(--blue); }
+    .hero p {
+      color: var(--gray); font-size: 1.15rem;
+      max-width: 540px; margin: 0 auto 2rem;
+    }
+    .hero-cta {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .8rem 1.8rem; border-radius: var(--radius);
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: transform .15s, box-shadow .15s;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue2); }
+    .btn-secondary { background: #fff; color: var(--dark); border: 1px solid var(--border); }
+
+    /* ── Sections ── */
+    section { padding: 4rem 1.5rem; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .section-title {
+      font-size: 1.7rem; font-weight: 700;
+      text-align: center; margin-bottom: .5rem;
+    }
+    .section-sub {
+      color: var(--gray); text-align: center;
+      margin-bottom: 2.5rem; font-size: 1rem;
+    }
+
+    /* ── Feature grid ── */
+    .features { background: #fff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+    .card-icon { font-size: 1.8rem; margin-bottom: .8rem; }
+    .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .card p { color: var(--gray); font-size: .9rem; }
+
+    /* ── Steps ── */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem; counter-reset: step;
+    }
+    .step { text-align: center; }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      font-size: 1.2rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .step h3 { font-size: .95rem; font-weight: 700; margin-bottom: .3rem; }
+    .step p { color: var(--gray); font-size: .88rem; }
+
+    /* ── Download box ── */
+    .download-section { background: #fff; }
+    .download-box {
+      border: 2px solid var(--blue); border-radius: var(--radius);
+      padding: 2rem; max-width: 640px; margin: 0 auto;
+      text-align: center;
+    }
+    .download-box h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: .5rem; }
+    .download-box p { color: var(--gray); margin-bottom: 1.5rem; font-size: .95rem; }
+    .req-list {
+      list-style: none; text-align: left;
+      max-width: 340px; margin: 0 auto 1.5rem;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    }
+    .req-list li {
+      padding: .55rem 1rem; font-size: .9rem;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .6rem;
+    }
+    .req-list li:last-child { border-bottom: none; }
+    .req-list li::before { content: "✓"; color: var(--green); font-weight: 700; }
+
+    /* ── Embed snippet ── */
+    .snippet-section { background: var(--dark); color: #e2e8f0; }
+    .snippet-section .section-title { color: #fff; }
+    .snippet-section .section-sub { color: #94a3b8; }
+    pre {
+      background: #1e293b; border-radius: var(--radius);
+      padding: 1.5rem; font-size: .85rem; overflow-x: auto;
+      border: 1px solid #334155; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: .8rem; right: .8rem;
+      background: var(--blue); color: #fff; border: none;
+      padding: .3rem .8rem; border-radius: 6px;
+      font-size: .8rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: var(--blue2); }
+
+    /* ── FAQ ── */
+    .faq { background: #fff; }
+    .faq-list { max-width: 680px; margin: 0 auto; }
+    details {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: .75rem; overflow: hidden;
+    }
+    summary {
+      padding: 1rem 1.2rem; font-weight: 600; cursor: pointer;
+      list-style: none; display: flex; justify-content: space-between;
+    }
+    summary::after { content: "+"; font-size: 1.2rem; color: var(--blue); }
+    details[open] summary::after { content: "−"; }
+    .faq-body { padding: 0 1.2rem 1rem; color: var(--gray); font-size: .95rem; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--dark); color: #94a3b8;
+      text-align: center; padding: 2rem 1.5rem;
+      font-size: .88rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">RAG Chatbot</span>
+  <div>
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#download">Download</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">Self-Hosted AI Agent</div>
+  <h1>Chat with Your Documents,<br><span>On Your Own Machine</span></h1>
+  <p>Upload PDFs, ask questions, get accurate answers — powered by local AI. No cloud. No subscriptions. No data leaves your computer.</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="#download" id="main-download-btn">
+      ⬇ Download Agent
+    </a>
+    <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-title">Everything you need, out of the box</div>
+    <div class="section-sub">One download. Runs anywhere Docker runs.</div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>PDF Document Chat</h3>
+        <p>Upload any PDF. Ask questions in plain English. The AI finds the relevant sections and gives you precise answers with sources.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <h3>100% Private</h3>
+        <p>Everything runs locally. Your documents never leave your machine. The AI model runs offline via Ollama.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <h3>Multi-User Accounts</h3>
+        <p>Each user registers their own account with isolated document storage. Perfect for teams.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>Embeddable Widget</h3>
+        <p>Copy one line of code from your dashboard and embed the chat widget on any website or internal tool.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Streaming Responses</h3>
+        <p>Answers stream in real time, token by token — just like ChatGPT, but running on your hardware.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3>OpenAI Compatible</h3>
+        <p>Prefer GPT-4? Set <code>LLM_PROVIDER=openai</code> in your config. Switch models any time without re-installing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-title">Up and running in 3 steps</div>
+    <div class="section-sub">No programming skills needed.</div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Install Docker Desktop</h3>
+        <p>Free download from docker.com. Works on Windows, Mac, and Linux.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Run the installer</h3>
+        <p>Double-click <code>install.ps1</code> (Windows) or run <code>./install.sh</code> (Mac/Linux). Done.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Open &amp; chat</h3>
+        <p>Go to <strong>http://localhost:8000</strong>, register, upload your PDFs, and start asking questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download-section" id="download">
+  <div class="container">
+    <div class="section-title">Download the Agent</div>
+    <div class="section-sub">Free. Open. No account required.</div>
+    <div class="download-box">
+      <h3>RAG Chatbot Agent v1.0</h3>
+      <p>Includes: one-click installer for Windows &amp; Linux/Mac, Docker Compose config, and full documentation.</p>
+      <ul class="req-list">
+        <li>Docker Desktop (free)</li>
+        <li>4 GB RAM minimum</li>
+        <li>~5 GB disk space</li>
+        <li>Windows 10/11, macOS 12+, or Ubuntu 20.04+</li>
+      </ul>
+      <!-- UPDATE THIS HREF to your actual download link (Supabase Storage URL) -->
+      <a class="btn btn-primary" href="rag-chatbot-agent-1.0.0.zip" download id="download-btn">
+        ⬇ Download ZIP (free)
+      </a>
+      <p style="margin-top:1rem;font-size:.85rem;color:#94a3b8;">
+        No email required &mdash; just download and run.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- EMBED SNIPPET -->
+<section class="snippet-section" id="embed">
+  <div class="container">
+    <div class="section-title">Embed on any website</div>
+    <div class="section-sub">After installing, copy this snippet into your webpage.</div>
+    <div style="position:relative;">
+      <pre id="snippet-code"><code>&lt;!-- RAG Chatbot Widget --&gt;
+&lt;script
+  src="http://localhost:8000/rag-widget.js"
+  data-api-url="http://localhost:8000"
+  data-api-key="YOUR_API_KEY"
+  data-title="Ask my documents"
+  data-theme="light"
+  data-position="bottom-right"&gt;
+&lt;/script&gt;</code></pre>
+      <button class="copy-btn" onclick="copySnippet()">Copy</button>
+    </div>
+    <p style="color:#94a3b8;font-size:.88rem;text-align:center;margin-top:1rem;">
+      Replace <code>localhost:8000</code> with your server's IP or domain, and <code>YOUR_API_KEY</code> from Dashboard → API Key tab.
+    </p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-title">Frequently Asked Questions</div>
+    <div class="faq-list">
+
+      <details>
+        <summary>Do I need programming skills?</summary>
+        <div class="faq-body">No. The installer handles everything. The only requirement is Docker Desktop, which has a simple graphical installer.</div>
+      </details>
+
+      <details>
+        <summary>Is my data safe? Does anything go to the cloud?</summary>
+        <div class="faq-body">By default, all AI processing happens locally using Ollama. Your documents never leave your machine. If you choose to use OpenAI, your chat messages are sent to OpenAI's servers — but document storage remains local.</div>
+      </details>
+
+      <details>
+        <summary>What file types can I upload?</summary>
+        <div class="faq-body">Currently PDF files are supported. Support for Word documents and plain text files can be added in future versions.</div>
+      </details>
+
+      <details>
+        <summary>Can multiple people use the same installation?</summary>
+        <div class="faq-body">Yes. Each person registers their own account and gets a completely separate document store. Documents from one account are never mixed with another's.</div>
+      </details>
+
+      <details>
+        <summary>What AI model does it use?</summary>
+        <div class="faq-body">By default it uses <strong>phi3:mini</strong> (Microsoft, ~2 GB), a fast and capable small model. You can switch to llama3.2, mistral, or any model from ollama.com/library by editing one line in your .env file.</div>
+      </details>
+
+      <details>
+        <summary>Can I run it on a server so others can access it?</summary>
+        <div class="faq-body">Yes. Install Docker on any Linux VPS (DigitalOcean, Hetzner, etc.), run the same installer, and point your domain at port 8000. Remember to set <code>ALLOWED_ORIGINS</code> to your domain in .env.</div>
+      </details>
+
+      <details>
+        <summary>How do I update to a newer version?</summary>
+        <div class="faq-body">Run <code>docker compose pull && docker compose up -d</code> inside the folder where you installed it. Your documents and accounts are preserved.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>RAG Chatbot Agent &mdash; Self-hosted AI for your documents.</p>
+  <p style="margin-top:.4rem;">Built with FastAPI, Qdrant, Ollama, and React.</p>
+</footer>
+
+<script>
+  function copySnippet() {
+    const code = document.getElementById("snippet-code").innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector(".copy-btn");
+      btn.textContent = "Copied!";
+      setTimeout(() => btn.textContent = "Copy", 2000);
+    });
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute("href"))
+        ?.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+</script>
+
+</body>
+</html>

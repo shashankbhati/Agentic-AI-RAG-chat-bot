@@ -1,0 +1,37 @@
+# Web framework
+fastapi==0.129.0
+uvicorn[standard]==0.40.0
+python-multipart==0.0.20
+
+# Vector DB
+qdrant-client==1.16.2
+
+# Embeddings & ML
+sentence-transformers==5.2.2
+numpy==2.3.5
+torch==2.10.0
+
+# LLM providers
+ollama==0.6.1
+openai==2.21.0
+
+# PDF processing
+pdfplumber==0.11.9
+pdfminer.six==20251230
+
+# Utilities
+python-dotenv==1.2.1
+pydantic==2.12.5
+pydantic[email]==2.12.5
+tqdm==4.67.3
+tiktoken==0.12.0
+
+# Auth & database
+sqlalchemy==2.0.36
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.25.3
+httpx==0.28.1

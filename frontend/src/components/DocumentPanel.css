@@ -1,0 +1,168 @@
+.doc-panel {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.doc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.doc-panel-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.doc-count {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+}
+
+.upload-zone {
+  margin: 12px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.upload-zone:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.upload-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.upload-zone.uploading {
+  cursor: default;
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.upload-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.upload-error {
+  margin: 0 12px 8px;
+  font-size: 12px;
+  color: var(--danger);
+  padding: 8px 10px;
+  background: rgba(255, 92, 92, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.doc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px 12px;
+}
+
+.doc-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.doc-item:hover {
+  background: var(--bg-hover);
+}
+
+.doc-item:hover .doc-delete-btn {
+  opacity: 1;
+}
+
+.doc-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+.doc-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-name {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.doc-delete-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+.doc-delete-btn:hover {
+  background: rgba(255, 92, 92, 0.15);
+  color: var(--danger);
+}

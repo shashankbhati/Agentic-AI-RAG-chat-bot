@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  # ── Vector database ───────────────────────────────────────────────────────
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: rag_qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6333/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Local LLM ─────────────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    # GPU support (uncomment if NVIDIA + nvidia-container-toolkit installed):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # ── Backend + Frontend + Widget (all-in-one) ──────────────────────────────
+  backend:
+    build:
+      context: .          # repo root so Dockerfile can copy frontend/dist and widget/dist
+      dockerfile: backend/Dockerfile
+    container_name: rag_backend
+    ports:
+      - "8000:8000"
+    environment:
+      QDRANT_URL:         http://qdrant:6333
+      OLLAMA_BASE_URL:    http://ollama:11434
+      COLLECTION_NAME:    ${COLLECTION_NAME:-rag_collection}
+      LLM_PROVIDER:       ${LLM_PROVIDER:-ollama}
+      OLLAMA_MODEL:       ${OLLAMA_MODEL:-phi3:mini}
+      OPENAI_API_KEY:     ${OPENAI_API_KEY:-}
+      OPENAI_MODEL:       ${OPENAI_MODEL:-gpt-4o-mini}
+      EMBED_MODEL_NAME:   ${EMBED_MODEL_NAME:-BAAI/bge-small-en-v1.5}
+      TOP_K:              ${TOP_K:-3}
+      ALLOWED_ORIGINS:    ${ALLOWED_ORIGINS:-http://localhost:8000}
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-60}
+      RATE_LIMIT_WINDOW:  ${RATE_LIMIT_WINDOW:-60}
+      JWT_SECRET:         ${JWT_SECRET:-change-me-in-production}
+    env_file:
+      - backend/.env
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./rag_chatbot.db:/app/rag_chatbot.db   # persist SQLite DB
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/v1/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  qdrant_storage:
+  ollama_models:

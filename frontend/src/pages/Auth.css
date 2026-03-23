@@ -1,0 +1,124 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 36px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-hint {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.field input {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+}
+
+.field input::placeholder {
+  color: var(--text-muted);
+}
+
+.auth-error {
+  font-size: 13px;
+  color: var(--danger);
+  background: rgba(255, 92, 92, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.auth-btn {
+  background: var(--accent);
+  color: white;
+  padding: 11px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s, opacity 0.15s;
+  margin-top: 4px;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.auth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.auth-footer + .auth-footer {
+  margin-top: 8px;
+}
